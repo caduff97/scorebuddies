@@ -1,46 +1,110 @@
-# Getting Started with Create React App
+# 🎮 ScoreBuddies
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**ScoreBuddies** is a lightweight and responsive React app designed to help you track scores with friends during game nights. Whether you're playing card games, board games, or party games — ScoreBuddies makes it fun and simple to keep track of every round, every player, and every point.
 
-## Available Scripts
+![ScoreBuddies Screenshot](./public/screenshot.png)
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🚀 Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- ✅ Add and manage players
+- 🧮 Input and track scores by round
+- 🧠 Auto-calculated scoreboard
+- 🏆 Display of winner with a banner
+- 🎨 Responsive and mobile-friendly UI
+- 🔁 Tab-based navigation for easy flow
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+---
 
-### `npm test`
+## 🛠️ Tech Stack
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **React** with functional components and hooks
+- **TypeScript** (if applicable)
+- **Tailwind CSS** for styling
+- **Context API** for game state management
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🧱 Project Structure
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+src/
+├── components/       # UI components like Header, Footer, ScoreInput...
+├── hooks/            # Custom hook (useGame) + context provider
+├── App.tsx           # Main app logic
+├── index.tsx         # React root
+public/
+├── favicon.svg       # Custom Lucide icon as favicon
+├── index.html        # Cleaned-up HTML template
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🧑‍💻 Getting Started
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### 1. Clone the Repository
+```bash
+git clone https://github.com/caduff97/scorebuddies.git
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### 3. Start the Development Server
+```bash
+npm start
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### 4. Build for Production
+```bash
+npm run build
+```
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## ⚙️ Customization
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Want to add game rules, score modifiers, or export features?
+Feel free to fork this project or open a PR!
+
+---
+
+## 📦 Deployment
+
+You can easily deploy this app to:
+
+- **Vercel**
+- **Netlify**
+- **GitHub Pages**
+- or any static hosting platform that supports `create-react-app`
+
+---
+
+## 🧠 TODO / Improvements
+
+- [ ] Add dark mode
+- [ ] Save game state to database
+- [ ] Export scores as CSV or PDF
+- [ ] Add animations or confetti on win
+- [ ] Shareable scoreboard link
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to submit issues, suggestions, or pull requests.
+
+---
+
+## 📄 License
+
+MIT License © 2025 [Carlos Fernandes]
+
+---
+
+## 💡 Inspiration
+
+Built to make game nights smoother, ScoreBuddies was created to help friends focus on fun — not math. ✌️
