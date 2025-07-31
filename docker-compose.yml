@@ -1,0 +1,8 @@
+services:
+  scorebuddies:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: scorebuddies
+    expose:
+      - "80"
