@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { UserPlus, User, Hash } from 'lucide-react';
-import { Player } from '../types';
-import { useGame } from '../hooks/useGame';
+import React, { useState } from "react";
+import { UserPlus, User, Hash } from "lucide-react";
+import { Player } from "../types";
+import { useGame } from "../hooks/useGame";
 
 const PlayerInput = () => {
-  const { players, addPlayer } = useGame();
-  const [playerName, setPlayerName] = useState('');
+  const { players, alphabeticPlayers, addPlayer } = useGame();
+  const [playerName, setPlayerName] = useState("");
 
   const handleAddPlayer = (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,10 +14,10 @@ const PlayerInput = () => {
         id: Date.now().toString(),
         name: playerName.trim(),
         totalScore: 0,
-        rounds: []
+        rounds: [],
       };
       addPlayer(newPlayer);
-      setPlayerName('');
+      setPlayerName("");
     }
   };
 
@@ -27,7 +27,7 @@ const PlayerInput = () => {
         <UserPlus className="text-primary-600" size={24} />
         <h2 className="text-2xl font-bold text-gray-800">Players</h2>
       </div>
-      
+
       <form onSubmit={handleAddPlayer} className="mb-8">
         <div className="flex gap-3 mb-6">
           <input
@@ -38,8 +38,8 @@ const PlayerInput = () => {
             className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-primary-500 transition-colors"
             maxLength={20}
           />
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={!playerName.trim()}
             className="px-6 py-3 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
           >
@@ -50,8 +50,11 @@ const PlayerInput = () => {
       </form>
 
       <div className="space-y-3">
-        {players.map((player, index) => (
-          <div key={player.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border-l-4 border-primary-500">
+        {alphabeticPlayers.map((player, index) => (
+          <div
+            key={player.id}
+            className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border-l-4 border-primary-500"
+          >
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
                 <Hash size={16} className="text-primary-600" />
@@ -60,7 +63,9 @@ const PlayerInput = () => {
             </div>
             <div className="flex items-center gap-2">
               <User size={16} className="text-gray-500" />
-              <span className="font-semibold text-primary-600">Total: {player.totalScore}</span>
+              <span className="font-semibold text-primary-600">
+                Total: {player.totalScore}
+              </span>
             </div>
           </div>
         ))}
@@ -76,4 +81,4 @@ const PlayerInput = () => {
   );
 };
 
-export default PlayerInput; 
+export default PlayerInput;

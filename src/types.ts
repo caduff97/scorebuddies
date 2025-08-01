@@ -3,6 +3,7 @@ export interface Player {
   name: string;
   totalScore: number;
   rounds: number[];
+  rank?: number;
 }
 
 export interface Round {
@@ -18,4 +19,4 @@ export interface Game {
   rounds: Round[];
   currentRound: number;
   createdAt: Date;
-} 
+}

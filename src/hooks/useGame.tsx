@@ -1,8 +1,15 @@
-import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { Player, Round, Game } from '../types';
+import React, {
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+  ReactNode,
+} from "react";
+import { Player, Round, Game } from "../types";
 
 interface GameContextType {
   players: Player[];
+  alphabeticPlayers: Player[];
   rounds: Round[];
   currentRound: number;
   editingRound: number | null;
@@ -10,10 +17,13 @@ interface GameContextType {
   totalRounds: number;
   addPlayer: (player: Player) => void;
   addRound: (round: Round) => void;
-  updateRound: (roundNumber: number, newScores: { playerId: string; score: number }[]) => void;
+  updateRound: (
+    roundNumber: number,
+    newScores: { playerId: string; score: number }[]
+  ) => void;
   deleteRound: (roundNumber: number) => void;
   resetGame: () => void;
-  getWinner: () => Player | null;
+  getWinners: () => Player[] | null;
   getRoundByNumber: (roundNumber: number) => Round | undefined;
   setEditingRound: (round: number | null) => void;
   setViewingRound: (round: number) => void;
@@ -25,7 +35,7 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 export const useGame = () => {
   const context = useContext(GameContext);
   if (context === undefined) {
-    throw new Error('useGame must be used within a GameProvider');
+    throw new Error("useGame must be used within a GameProvider");
   }
   return context;
 };
@@ -40,10 +50,10 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   const [currentRound, setCurrentRound] = useState(1);
   const [editingRound, setEditingRound] = useState<number | null>(null);
   const [viewingRound, setViewingRound] = useState(1);
+  const totalRounds = React.useMemo(() => rounds.length, [rounds]);
 
-  // Load game data from localStorage on component mount
   useEffect(() => {
-    const savedGame = localStorage.getItem('scorebuddies-game');
+    const savedGame = localStorage.getItem("scorebuddies-game");
     if (savedGame) {
       try {
         const game: Game = JSON.parse(savedGame);
@@ -51,7 +61,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
         setRounds(game.rounds);
         setCurrentRound(game.currentRound);
       } catch (error) {
-        console.error('Error loading saved game:', error);
+        console.error("Error loading saved game:", error);
       }
     }
   }, []);
@@ -59,113 +69,161 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   // Save game data to localStorage whenever it changes
   useEffect(() => {
     const game: Game = {
-      id: 'current-game',
-      name: 'Current Game',
+      id: "current-game",
+      name: "Current Game",
       players,
       rounds,
       currentRound,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
-    localStorage.setItem('scorebuddies-game', JSON.stringify(game));
+    localStorage.setItem("scorebuddies-game", JSON.stringify(game));
   }, [players, rounds, currentRound]);
 
   const addPlayer = (player: Player) => {
-    setPlayers(prev => [...prev, player]);
+    setPlayersWithRank((prev) => [...prev, player]);
+  };
+
+  const recalculateRanks = (playersList: Player[]) => {
+    const rankedPlayers = [...playersList].sort(
+      (a, b) => b.totalScore - a.totalScore
+    );
+
+    let currentRank = 0;
+    let lastScore: number | null = null;
+
+    return rankedPlayers.map((player, idx) => {
+      if (player.totalScore !== lastScore) {
+        currentRank += 1;
+      }
+
+      lastScore = player.totalScore;
+
+      return { ...player, rank: currentRank };
+    });
+  };
+
+  // Helper to update players and recalculate ranks
+  const setPlayersWithRank = (updateFn: (prev: Player[]) => Player[]) => {
+    setPlayers((prev) => {
+      const updated = updateFn(prev);
+      return recalculateRanks(updated);
+    });
   };
 
   const addRound = (round: Round) => {
-    setRounds(prev => [...prev, round]);
-    
+    setRounds((prev) => [...prev, round]);
+
     // Update player totals
-    setPlayers(prev => prev.map(player => {
-      const roundScore = round.scores.find(s => s.playerId === player.id);
-      const newTotal = player.totalScore + (roundScore?.score || 0);
-      return {
-        ...player,
-        totalScore: newTotal,
-        rounds: [...player.rounds, roundScore?.score || 0]
-      };
-    }));
-    
-    setCurrentRound(prev => prev + 1);
+    setPlayersWithRank((prev) =>
+      prev.map((player) => {
+        const roundScore = round.scores.find((s) => s.playerId === player.id);
+        const newTotal = player.totalScore + (roundScore?.score || 0);
+        return {
+          ...player,
+          totalScore: newTotal,
+          rounds: [...player.rounds, roundScore?.score || 0],
+        };
+      })
+    );
+
+    setCurrentRound((prev) => prev + 1);
   };
 
-  const updateRound = (roundNumber: number, newScores: { playerId: string; score: number }[]) => {
+  const updateRound = (
+    roundNumber: number,
+    newScores: { playerId: string; score: number }[]
+  ) => {
     // Find the round to update
-    const roundIndex = rounds.findIndex(r => r.roundNumber === roundNumber);
+    const roundIndex = rounds.findIndex((r) => r.roundNumber === roundNumber);
     if (roundIndex === -1) return;
 
     const oldRound = rounds[roundIndex];
     const newRound: Round = {
       ...oldRound,
-      scores: newScores
+      scores: newScores,
     };
 
     // Update the round
-    setRounds(prev => prev.map((r, i) => i === roundIndex ? newRound : r));
+    setRounds((prev) => prev.map((r, i) => (i === roundIndex ? newRound : r)));
 
     // Recalculate all player totals from scratch
-    setPlayers(prev => prev.map(player => {
-      let newTotal = 0;
-      rounds.forEach(round => {
-        if (round.id === oldRound.id) {
-          // Use new scores for this round
-          const score = newScores.find(s => s.playerId === player.id)?.score || 0;
-          newTotal += score;
-        } else {
-          // Use existing scores for other rounds
-          const score = round.scores.find(s => s.playerId === player.id)?.score || 0;
-          newTotal += score;
-        }
-      });
-      
-      return {
-        ...player,
-        totalScore: newTotal,
-        rounds: rounds.map(round => {
+    setPlayersWithRank((prev) =>
+      prev.map((player) => {
+        let newTotal = 0;
+        rounds.forEach((round) => {
           if (round.id === oldRound.id) {
-            return newScores.find(s => s.playerId === player.id)?.score || 0;
+            // Use new scores for this round
+            const score =
+              newScores.find((s) => s.playerId === player.id)?.score || 0;
+            newTotal += score;
+          } else {
+            // Use existing scores for other rounds
+            const score =
+              round.scores.find((s) => s.playerId === player.id)?.score || 0;
+            newTotal += score;
           }
-          return round.scores.find(s => s.playerId === player.id)?.score || 0;
-        })
-      };
-    }));
+        });
+
+        return {
+          ...player,
+          totalScore: newTotal,
+          rounds: rounds.map((round) => {
+            if (round.id === oldRound.id) {
+              return (
+                newScores.find((s) => s.playerId === player.id)?.score || 0
+              );
+            }
+            return (
+              round.scores.find((s) => s.playerId === player.id)?.score || 0
+            );
+          }),
+        };
+      })
+    );
 
     setEditingRound(null);
   };
 
   const deleteRound = (roundNumber: number) => {
-    const roundToDelete = rounds.find(r => r.roundNumber === roundNumber);
+    const roundToDelete = rounds.find((r) => r.roundNumber === roundNumber);
     if (!roundToDelete) return;
 
-    // Remove the round
-    setRounds(prev => prev.filter(r => r.roundNumber !== roundNumber));
+    // Remove the round and recalculate roundNumbers
+    const updatedRounds = rounds
+      .filter((r) => r.roundNumber !== roundNumber)
+      .map((round, idx) => ({
+        ...round,
+        roundNumber: idx + 1,
+      }));
+
+    setRounds(updatedRounds);
 
     // Recalculate all player totals
-    setPlayers(prev => prev.map(player => {
-      let newTotal = 0;
-      const newRounds: number[] = [];
-      
-      rounds.forEach(round => {
-        if (round.roundNumber !== roundNumber) {
-          const score = round.scores.find(s => s.playerId === player.id)?.score || 0;
+    setPlayers((prev) =>
+      prev.map((player) => {
+        let newTotal = 0;
+        const newRounds: number[] = [];
+
+        updatedRounds.forEach((round) => {
+          const score =
+            round.scores.find((s) => s.playerId === player.id)?.score || 0;
           newTotal += score;
           newRounds.push(score);
-        }
-      });
-      
-      return {
-        ...player,
-        totalScore: newTotal,
-        rounds: newRounds
-      };
-    }));
+        });
+
+        return {
+          ...player,
+          totalScore: newTotal,
+          rounds: newRounds,
+        };
+      })
+    );
 
     // Adjust current round if needed
-    if (currentRound > roundNumber) {
-      setCurrentRound(prev => prev - 1);
+    if (currentRound > updatedRounds.length) {
+      setCurrentRound(updatedRounds.length + 1);
     }
-    
+
     setEditingRound(null);
   };
 
@@ -174,24 +232,25 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     setRounds([]);
     setCurrentRound(1);
     setEditingRound(null);
-    localStorage.removeItem('scorebuddies-game');
+    localStorage.removeItem("scorebuddies-game");
   };
 
-  const getWinner = () => {
+  const getWinners = () => {
     if (players.length === 0) return null;
-    return players.reduce((winner, player) => 
-      player.totalScore > winner.totalScore ? player : winner
-    );
+    const maxScore = Math.max(...players.map((p) => p.totalScore));
+    const winners = players.filter((p) => p.totalScore === maxScore);
+    return winners.length > 0 ? winners : null;
   };
 
   const getRoundByNumber = (roundNumber: number) => {
-    return rounds.find(r => r.roundNumber === roundNumber);
+    return rounds.find((r) => r.roundNumber === roundNumber);
   };
-
-  const totalRounds = rounds.length;
 
   const value: GameContextType = {
     players,
+    alphabeticPlayers: [...players].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    ),
     rounds,
     currentRound,
     editingRound,
@@ -202,16 +261,12 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     updateRound,
     deleteRound,
     resetGame,
-    getWinner,
+    getWinners,
     getRoundByNumber,
     setEditingRound,
     setViewingRound,
-    setCurrentRound
+    setCurrentRound,
   };
 
-  return (
-    <GameContext.Provider value={value}>
-      {children}
-    </GameContext.Provider>
-  );
-}; 
+  return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
+};
