@@ -3,7 +3,7 @@ export interface Player {
   name: string;
   totalScore: number;
   rounds: number[];
-  rank?: number;
+  rank: number;
 }
 
 export interface Round {

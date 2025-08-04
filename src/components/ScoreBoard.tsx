@@ -7,7 +7,7 @@ interface ScoreBoardProps {
 }
 
 const ScoreBoard: React.FC<ScoreBoardProps> = ({ onTabChange }) => {
-  const { players, rounds, setViewingRound } = useGame();
+  const { rankedPlayers, rounds, setViewingRound } = useGame();
 
   const getPlayerScoreForRound = (
     playerId: string,
@@ -24,7 +24,6 @@ const ScoreBoard: React.FC<ScoreBoardProps> = ({ onTabChange }) => {
     setViewingRound(roundNumber);
   };
 
-  console.log(rounds);
   return (
     <div className="p-6">
       <div className="flex items-center gap-2 mb-6">
@@ -33,7 +32,7 @@ const ScoreBoard: React.FC<ScoreBoardProps> = ({ onTabChange }) => {
       </div>
 
       <div className="space-y-3 mb-8">
-        {players.map((player) => (
+        {rankedPlayers.map((player) => (
           <div
             key={player.id}
             className={`
@@ -123,7 +122,7 @@ const ScoreBoard: React.FC<ScoreBoardProps> = ({ onTabChange }) => {
                 </div>
                 <div className="px-4 py-3">
                   <div className="space-y-1">
-                    {players.map((player) => (
+                    {rankedPlayers.map((player) => (
                       <div
                         key={player.id}
                         className="flex justify-between text-sm"
