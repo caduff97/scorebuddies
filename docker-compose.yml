@@ -3,6 +3,5 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: unless-stopped
     container_name: scorebuddies
-    expose:
-      - "80"
