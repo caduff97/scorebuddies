@@ -18,8 +18,8 @@ function AppContent() {
   } = useGame();
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="max-w-md mx-auto bg-white shadow-lg min-h-screen flex flex-col">
+    <div className="min-h-screen bg-gray-100 md:py-10">
+      <div className="w-full max-w-md md:max-w-2xl mx-auto bg-white shadow-lg min-h-screen md:min-h-0 md:rounded-2xl flex flex-col overflow-hidden">
         <Header />
         
         <TabNavigation 

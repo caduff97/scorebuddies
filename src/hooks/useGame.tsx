@@ -18,6 +18,7 @@ interface GameContextType {
   viewingRound: number;
   totalRounds: number;
   addPlayer: (player: Player) => void;
+  renamePlayer: (playerId: string, newName: string) => void;
   addRound: (round: Round) => void;
   updateRound: (
     roundNumber: number,
@@ -118,6 +119,12 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     setPlayers(recalculateRanks(updatedPlayers));
   };
 
+  const renamePlayer = (playerId: string, newName: string) => {
+    setPlayers((prev) =>
+      prev.map((p) => (p.id === playerId ? { ...p, name: newName.trim() } : p))
+    );
+  };
+
   const addRound = (round: Round) => {
     const newRounds = [...rounds, round];
     setRounds(newRounds);
@@ -183,6 +190,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     viewingRound,
     totalRounds,
     addPlayer,
+    renamePlayer,
     addRound,
     updateRound,
     deleteRound,
