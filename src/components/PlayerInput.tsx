@@ -81,12 +81,14 @@ const PlayerInput = () => {
             key={player.id}
             className="flex items-center gap-4 px-4 py-3 bg-white rounded-xl border border-gray-200 hover:border-primary-200 hover:shadow-sm transition-all"
           >
-            {/* Avatar */}
-            <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center shrink-0">
-              <span className="text-primary-700 font-bold text-sm">
-                {player.name.charAt(0).toUpperCase()}
-              </span>
-            </div>
+            {/* Avatar — hidden while editing to save space */}
+            {editingId !== player.id && (
+              <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center shrink-0">
+                <span className="text-primary-700 font-bold text-sm">
+                  {player.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            )}
 
             {/* Name / edit input */}
             {editingId === player.id ? (
@@ -112,14 +114,14 @@ const PlayerInput = () => {
                   <button
                     onClick={commitEdit}
                     disabled={!editingName.trim()}
-                    className="p-1.5 text-green-600 hover:text-green-700 disabled:text-gray-300 transition-colors"
+                    className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 disabled:bg-gray-100 disabled:text-gray-300 transition-colors"
                     title="Save"
                   >
                     <Check size={18} />
                   </button>
                   <button
                     onClick={cancelEdit}
-                    className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="p-2 bg-gray-100 text-gray-500 rounded-lg hover:bg-gray-200 transition-colors"
                     title="Cancel"
                   >
                     <X size={18} />
