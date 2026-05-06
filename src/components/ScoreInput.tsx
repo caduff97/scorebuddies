@@ -3,6 +3,8 @@ import { Plus, Hash, Save, X, Edit, Trash2, Eye } from "lucide-react";
 import { Round } from "../types";
 import { useGame } from "../hooks/useGame";
 
+const DRAFT_KEY = "scorebuddies-draft-scores";
+
 const ScoreInput = () => {
   const [scores, setScores] = useState<{ [playerId: string]: string }>({});
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -49,10 +51,27 @@ const ScoreInput = () => {
         initialScores[score.playerId] = score.score.toString();
       });
       setScores(initialScores);
+    } else if (!editingRound && !existingRound) {
+      // Adding a new round — restore any in-progress draft
+      const saved = localStorage.getItem(DRAFT_KEY);
+      if (saved) {
+        try {
+          setScores(JSON.parse(saved));
+          return;
+        } catch {}
+      }
+      setScores({});
     } else {
       setScores({});
     }
   }, [editingRound, existingRound]);
+
+  // Auto-save draft while entering a new round
+  useEffect(() => {
+    if (!editingRound && !existingRound && Object.keys(scores).length > 0) {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(scores));
+    }
+  }, [scores, editingRound, existingRound]);
 
   const handleScoreChange = (playerId: string, value: string) => {
     setScores((prev) => ({
@@ -83,6 +102,7 @@ const ScoreInput = () => {
       setViewingRound(totalRounds + 2);
     }
 
+    localStorage.removeItem(DRAFT_KEY);
     setScores({});
   };
 

@@ -8,6 +8,15 @@ import React, {
 } from "react";
 import { Player, Round, Game } from "../types";
 
+const loadSavedGame = (): Game | null => {
+  try {
+    const saved = localStorage.getItem("scorebuddies-game");
+    return saved ? (JSON.parse(saved) as Game) : null;
+  } catch {
+    return null;
+  }
+};
+
 interface GameContextType {
   players: Player[];
   alphabeticPlayers: Player[];
@@ -45,11 +54,19 @@ interface GameProviderProps {
 }
 
 export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [rounds, setRounds] = useState<Round[]>([]);
-  const [currentRound, setCurrentRound] = useState(1);
+  const [players, setPlayers] = useState<Player[]>(
+    () => loadSavedGame()?.players ?? []
+  );
+  const [rounds, setRounds] = useState<Round[]>(
+    () => loadSavedGame()?.rounds ?? []
+  );
+  const [currentRound, setCurrentRound] = useState<number>(
+    () => loadSavedGame()?.currentRound ?? 1
+  );
   const [editingRound, setEditingRound] = useState<number | null>(null);
-  const [viewingRound, setViewingRound] = useState(1);
+  const [viewingRound, setViewingRound] = useState<number>(
+    () => loadSavedGame()?.currentRound ?? 1
+  );
 
   const totalRounds = useMemo(() => rounds.length, [rounds]);
 
@@ -87,20 +104,6 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   };
 
   // ---- Game Persistence ----
-  useEffect(() => {
-    const saved = localStorage.getItem("scorebuddies-game");
-    if (saved) {
-      try {
-        const game: Game = JSON.parse(saved);
-        setPlayers(game.players);
-        setRounds(game.rounds);
-        setCurrentRound(game.currentRound);
-      } catch (err) {
-        console.error("Error loading game:", err);
-      }
-    }
-  }, []);
-
   useEffect(() => {
     const game: Game = {
       id: "current-game",
@@ -160,6 +163,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     setCurrentRound(1);
     setEditingRound(null);
     localStorage.removeItem("scorebuddies-game");
+    localStorage.removeItem("scorebuddies-draft-scores");
   };
 
   const getWinners = () => {

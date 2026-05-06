@@ -10,12 +10,14 @@ import Footer from './components/Footer';
 import { useGame, GameProvider } from './hooks/useGame';
 
 function AppContent() {
-  const [activeTab, setActiveTab] = useState<'players' | 'score' | 'board'>('players');
-  
-  const { 
-    players, 
+  const {
+    players,
     totalRounds,
   } = useGame();
+
+  const [activeTab, setActiveTab] = useState<'players' | 'score' | 'board'>(
+    () => players.length > 0 ? 'score' : 'players'
+  );
 
   return (
     <div className="min-h-screen bg-gray-100 md:py-10">
