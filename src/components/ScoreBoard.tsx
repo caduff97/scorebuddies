@@ -1,5 +1,5 @@
 import React from "react";
-import { Trophy, Medal, Hash, TrendingUp } from "lucide-react";
+import { Trophy, Medal, Hash, TrendingUp, Printer } from "lucide-react";
 import { useGame } from "../hooks/useGame";
 
 interface ScoreBoardProps {
@@ -7,7 +7,7 @@ interface ScoreBoardProps {
 }
 
 const ScoreBoard: React.FC<ScoreBoardProps> = ({ onTabChange }) => {
-  const { rankedPlayers, rounds, setViewingRound } = useGame();
+  const { rankedPlayers, rounds, setViewingRound, gameName } = useGame();
 
   const getPlayerScoreForRound = (
     playerId: string,
@@ -24,11 +24,30 @@ const ScoreBoard: React.FC<ScoreBoardProps> = ({ onTabChange }) => {
     setViewingRound(roundNumber);
   };
 
+  const handlePrint = () => window.print();
+
   return (
-    <div className="p-6">
-      <div className="flex items-center gap-2 mb-6">
-        <Trophy className="text-primary-600" size={24} />
-        <h2 className="text-2xl font-bold text-gray-800">Scoreboard</h2>
+    <div id="print-scoreboard" className="p-6">
+      {/* Print-only header */}
+      <div className="hidden print:block mb-6 text-center border-b border-gray-300 pb-4">
+        <h1 className="text-2xl font-bold text-gray-900">
+          {gameName || "ScoreBuddies"} — Final Scoreboard
+        </h1>
+        <p className="text-sm text-gray-500 mt-1">{new Date().toLocaleDateString(undefined, { dateStyle: "long" })}</p>
+      </div>
+
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <Trophy className="text-primary-600" size={24} />
+          <h2 className="text-2xl font-bold text-gray-800">Scoreboard</h2>
+        </div>
+        <button
+          onClick={handlePrint}
+          className="print:hidden flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          <Printer size={16} />
+          Print &amp; Save
+        </button>
       </div>
 
       <div className="space-y-3 mb-8">

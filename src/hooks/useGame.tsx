@@ -26,6 +26,8 @@ interface GameContextType {
   editingRound: number | null;
   viewingRound: number;
   totalRounds: number;
+  gameName: string;
+  setGameName: (name: string) => void;
   addPlayer: (player: Player) => void;
   renamePlayer: (playerId: string, newName: string) => void;
   addRound: (round: Round) => void;
@@ -63,6 +65,10 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   const [currentRound, setCurrentRound] = useState<number>(
     () => loadSavedGame()?.currentRound ?? 1
   );
+  const [gameName, setGameName] = useState<string>(() => {
+    const name = loadSavedGame()?.name ?? "";
+    return name === "Current Game" ? "" : name;
+  });
   const [editingRound, setEditingRound] = useState<number | null>(null);
   const [viewingRound, setViewingRound] = useState<number>(
     () => loadSavedGame()?.currentRound ?? 1
@@ -107,14 +113,14 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   useEffect(() => {
     const game: Game = {
       id: "current-game",
-      name: "Current Game",
+      name: gameName,
       players,
       rounds,
       currentRound,
       createdAt: new Date(),
     };
     localStorage.setItem("scorebuddies-game", JSON.stringify(game));
-  }, [players, rounds, currentRound]);
+  }, [gameName, players, rounds, currentRound]);
 
   // ---- Core Actions ----
   const addPlayer = (player: Player) => {
@@ -162,6 +168,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     setRounds([]);
     setCurrentRound(1);
     setEditingRound(null);
+    setGameName("");
     localStorage.removeItem("scorebuddies-game");
     localStorage.removeItem("scorebuddies-draft-scores");
   };
@@ -176,6 +183,8 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     rounds.find((r) => r.roundNumber === roundNumber);
 
   const value: GameContextType = {
+    gameName,
+    setGameName,
     players,
     alphabeticPlayers: useMemo(
       () => [...players].sort((a, b) => a.name.localeCompare(b.name)),

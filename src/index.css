@@ -10,4 +10,22 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #print-scoreboard,
+  #print-scoreboard * {
+    visibility: visible;
+  }
+
+  #print-scoreboard {
+    position: fixed;
+    inset: 0;
+    padding: 32px;
+    background: white;
+  }
 } 
