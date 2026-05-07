@@ -1,0 +1,12 @@
+{
+  "name": "scorebuddies-server",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "express": "^5.2.1",
+    "ws": "^8.20.0"
+  },
+  "engines": {
+    "node": ">=26"
+  }
+}

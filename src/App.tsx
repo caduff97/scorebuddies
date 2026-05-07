@@ -7,6 +7,7 @@ import ScoreInput from './components/ScoreInput';
 import ScoreBoard from './components/ScoreBoard';
 import WinnerBanner from './components/WinnerBanner';
 import Footer from './components/Footer';
+import WatchMode from './components/WatchMode';
 import { useGame, GameProvider } from './hooks/useGame';
 
 function AppContent() {
@@ -23,8 +24,8 @@ function AppContent() {
     <div className="min-h-screen bg-gray-100 md:py-10">
       <div className="w-full max-w-md md:max-w-2xl mx-auto bg-white shadow-lg min-h-screen md:min-h-0 md:rounded-2xl flex flex-col overflow-hidden">
         <Header />
-        
-        <TabNavigation 
+
+        <TabNavigation
           activeTab={activeTab}
           onTabChange={setActiveTab}
           hasPlayers={players.length > 0}
@@ -39,11 +40,11 @@ function AppContent() {
           {activeTab === 'players' && (
             <PlayerInput />
           )}
-          
+
           {activeTab === 'score' && players.length > 0 && (
             <ScoreInput />
           )}
-          
+
           {activeTab === 'board' && players.length > 0 && (
             <ScoreBoard onTabChange={setActiveTab} />
           )}
@@ -57,6 +58,11 @@ function AppContent() {
 }
 
 function App() {
+  const watchMatch = window.location.pathname.match(/^\/watch\/([a-f0-9]+)$/);
+  if (watchMatch) {
+    return <WatchMode roomId={watchMatch[1]} />;
+  }
+
   return (
     <GameProvider>
       <AppContent />
@@ -64,4 +70,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;

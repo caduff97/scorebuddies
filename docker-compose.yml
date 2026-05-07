@@ -1,7 +1,16 @@
 services:
-  scorebuddies:
+  frontend:
     build:
       context: .
       dockerfile: Dockerfile
+    depends_on:
+      - backend
     restart: unless-stopped
-    container_name: scorebuddies
+    container_name: scorebuddies-frontend
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    container_name: scorebuddies-backend
