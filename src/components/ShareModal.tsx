@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { X, Copy, CheckCircle, Radio } from 'lucide-react';
+import { X, Copy, CheckCircle, Radio, WifiOff } from 'lucide-react';
 
 interface ShareModalProps {
   roomId: string;
   onClose: () => void;
+  onStop: () => void;
 }
 
-const ShareModal: React.FC<ShareModalProps> = ({ roomId, onClose }) => {
+const ShareModal: React.FC<ShareModalProps> = ({ roomId, onClose, onStop }) => {
   const [copied, setCopied] = useState(false);
   const url = `${window.location.origin}/watch/${roomId}`;
 
@@ -46,6 +47,14 @@ const ShareModal: React.FC<ShareModalProps> = ({ roomId, onClose }) => {
             ? <><CheckCircle size={15} className="text-green-500" /> Copied!</>
             : <><Copy size={15} /> Copy link</>
           }
+        </button>
+
+        <button
+          onClick={onStop}
+          className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors font-medium"
+        >
+          <WifiOff size={15} />
+          Stop sharing
         </button>
       </div>
     </div>

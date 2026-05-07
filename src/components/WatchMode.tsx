@@ -41,9 +41,10 @@ const WatchMode: React.FC<WatchModeProps> = ({ roomId }) => {
           setError('Room not found. The host may have closed the session.');
           return;
         }
-        attempts++;
-        if (attempts <= 5 && !cancelled) {
-          reconnectTimeout = setTimeout(connect, Math.min(1000 * attempts, 5000));
+        if (!cancelled) {
+          const delay = Math.min(1000 * 2 ** attempts, 10_000);
+          attempts++;
+          reconnectTimeout = setTimeout(connect, delay);
         }
       };
 

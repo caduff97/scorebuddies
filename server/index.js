@@ -32,9 +32,10 @@ server.on('upgrade', (request, socket, head) => {
 
 // Heartbeat: detect dead connections every 30s
 const HEARTBEAT_MS = 30_000;
+const MAX_VIEWERS_PER_ROOM = 50;
 setInterval(() => {
   for (const ws of wss.clients) {
-    if (!ws.isAlive) { ws.terminate(); return; }
+    if (!ws.isAlive) { ws.terminate(); continue; }
     ws.isAlive = false;
     ws.ping();
   }

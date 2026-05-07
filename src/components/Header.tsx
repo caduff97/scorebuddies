@@ -6,7 +6,7 @@ import ShareModal from './ShareModal';
 
 const Header = () => {
   const { gameName, setGameName, players } = useGame();
-  const { roomId, startSharing, isSharing } = useShare();
+  const { roomId, startSharing, stopSharing, isSharing } = useShare();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -29,34 +29,38 @@ const Header = () => {
   };
 
   const handleShare = async () => {
-    if (!roomId) await startSharing();
+    await startSharing();
     setShowModal(true);
   };
 
   return (
     <>
       <header className="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-6 text-center shadow-lg print:hidden">
-        <div className="flex items-center justify-center gap-3 mb-3 relative">
-          <Gamepad2 size={32} className="text-yellow-300" />
-          <h1 className="text-3xl font-bold">ScoreBuddies</h1>
-
-          {players.length > 0 && (
-            <button
-              onClick={handleShare}
-              title="Share scoreboard"
-              className="absolute right-0 flex items-center gap-1.5 bg-white/15 hover:bg-white/25 transition-colors rounded-full px-3 py-1.5 text-sm font-medium"
-            >
-              <Share2 size={14} />
-              {isSharing ? (
-                <span className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-                  Live
-                </span>
-              ) : (
-                'Share'
-              )}
-            </button>
-          )}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex-1" />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Gamepad2 size={28} className="text-yellow-300 sm:size-8" />
+            <h1 className="text-2xl sm:text-3xl font-bold">ScoreBuddies</h1>
+          </div>
+          <div className="flex-1 flex justify-end">
+            {players.length > 0 && (
+              <button
+                onClick={handleShare}
+                title="Share scoreboard"
+                className="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 transition-colors rounded-full px-2 sm:px-3 py-1.5 text-sm font-medium"
+              >
+                <Share2 size={14} />
+                {isSharing ? (
+                  <>
+                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                    <span className="hidden sm:inline">Live</span>
+                  </>
+                ) : (
+                  <span className="hidden sm:inline">Share</span>
+                )}
+              </button>
+            )}
+          </div>
         </div>
 
         {editing ? (
@@ -86,7 +90,11 @@ const Header = () => {
       </header>
 
       {showModal && roomId && (
-        <ShareModal roomId={roomId} onClose={() => setShowModal(false)} />
+        <ShareModal
+          roomId={roomId}
+          onClose={() => setShowModal(false)}
+          onStop={() => { stopSharing(); setShowModal(false); }}
+        />
       )}
     </>
   );
