@@ -80,7 +80,7 @@ const WatchMode: React.FC<WatchModeProps> = ({ roomId }) => {
 
   return (
     <div className="min-h-screen bg-gray-100 md:py-10">
-      <div className="w-full max-w-md md:max-w-2xl mx-auto bg-white shadow-lg min-h-screen md:min-h-0 md:rounded-2xl flex flex-col overflow-hidden">
+      <div className="w-full max-w-md md:max-w-2xl mx-auto bg-white shadow-lg min-h-screen md:min-h-0 md:rounded-2xl flex flex-col overflow-hidden print:overflow-visible">
         <header className="print:hidden bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-6 text-center shadow-lg">
           <div className="flex items-center justify-center gap-3 mb-1">
             <Gamepad2 size={32} className="text-yellow-300" />
@@ -106,7 +106,7 @@ const WatchMode: React.FC<WatchModeProps> = ({ roomId }) => {
           </div>
         </header>
 
-        <main id="print-scoreboard" className="flex-1 overflow-y-auto p-6">
+        <main id="print-scoreboard" className="flex-1 overflow-y-auto print:overflow-visible p-6">
           {/* Print-only header */}
           <div className="hidden print:block mb-6 text-center border-b border-gray-300 pb-4">
             <h1 className="text-2xl font-bold text-gray-900">
@@ -130,22 +130,21 @@ const WatchMode: React.FC<WatchModeProps> = ({ roomId }) => {
           ) : (
             <>
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Trophy className="text-primary-600" size={24} />
+                <div className="flex items-center gap-2 min-w-0">
+                  <Trophy className="text-primary-600 shrink-0" size={24} />
                   <h2 className="text-2xl font-bold text-gray-800">Scoreboard</h2>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="print:hidden text-xs bg-green-100 text-green-700 px-2.5 py-1 rounded-full font-medium">
+                  <span className="print:hidden text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium whitespace-nowrap">
                     View only
                   </span>
-                  <button
-                    onClick={() => window.print()}
-                    className="print:hidden flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
-                  >
-                    <Printer size={16} />
-                    Print &amp; Save
-                  </button>
                 </div>
+                <button
+                  onClick={() => window.print()}
+                  className="print:hidden shrink-0 flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors ml-2"
+                >
+                  <Printer size={16} />
+                  <span className="hidden sm:inline">Print &amp; Save</span>
+                  <span className="sm:hidden">Print</span>
+                </button>
               </div>
 
               <div className="space-y-3 mb-8">

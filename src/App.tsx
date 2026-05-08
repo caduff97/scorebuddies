@@ -22,7 +22,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-100 md:py-10">
-      <div className="w-full max-w-md md:max-w-2xl mx-auto bg-white shadow-lg min-h-screen md:min-h-0 md:rounded-2xl flex flex-col overflow-hidden">
+      <div className="w-full max-w-md md:max-w-2xl mx-auto bg-white shadow-lg min-h-screen md:min-h-0 md:rounded-2xl flex flex-col overflow-hidden print:overflow-visible">
         <Header />
 
         <TabNavigation
@@ -36,7 +36,7 @@ function AppContent() {
           />
         )}
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto print:overflow-visible">
           {activeTab === 'players' && (
             <PlayerInput />
           )}
