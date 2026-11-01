@@ -8,6 +8,7 @@ import {
   Trash2,
   Eye,
   Delete,
+  RotateCcw,
 } from "lucide-react";
 import { Round } from "../types";
 import { useGame } from "../hooks/useGame";
@@ -110,7 +111,9 @@ const Keypad: React.FC<KeypadProps> = ({ playerName, initial, onDone, onClose })
 };
 
 /* ------------------------------ Score screen ------------------------------ */
-const QUICK = [-5, -1, 1, 3, 5];
+// Two rows: negatives on top, positives on the bottom, with a reset-to-0 chip.
+const NEG = [-10, -5, -2, -1];
+const POS = [1, 2, 5, 10];
 
 const ScoreInput = () => {
   const [scores, setScores] = useState<{ [playerId: string]: string }>({});
@@ -289,23 +292,39 @@ const ScoreInput = () => {
                   )}
                 </div>
 
-                {/* Quick-add chips */}
+                {/* Quick-add chips: negatives, reset-to-0, positives */}
                 {!isReadOnly && (
-                  <div className="flex gap-2">
-                    {QUICK.map((delta) => (
+                  <div className="grid grid-cols-5 gap-2">
+                    {NEG.map((delta) => (
                       <button
                         key={delta}
                         type="button"
                         onClick={() => bump(player.id, delta)}
-                        className={`flex-1 py-2 rounded-lg text-sm font-semibold active:scale-95 transition-transform ${
-                          delta < 0
-                            ? "bg-red-50 text-red-600 hover:bg-red-100"
-                            : "bg-primary-50 text-primary-700 hover:bg-primary-100"
-                        }`}
+                        className="py-2 rounded-lg text-sm font-semibold bg-red-50 text-red-600 hover:bg-red-100 active:scale-95 transition-transform"
                       >
-                        {delta > 0 ? `+${delta}` : delta}
+                        {delta}
                       </button>
                     ))}
+                    <button
+                      type="button"
+                      onClick={() => setScore(player.id, 0)}
+                      aria-label="Reset to zero"
+                      className="py-2 rounded-lg text-sm font-semibold bg-gray-200 text-gray-600 hover:bg-gray-300 active:scale-95 transition-transform flex items-center justify-center"
+                    >
+                      <RotateCcw size={15} />
+                    </button>
+                    {POS.map((delta) => (
+                      <button
+                        key={delta}
+                        type="button"
+                        onClick={() => bump(player.id, delta)}
+                        className="py-2 rounded-lg text-sm font-semibold bg-primary-50 text-primary-700 hover:bg-primary-100 active:scale-95 transition-transform"
+                      >
+                        +{delta}
+                      </button>
+                    ))}
+                    {/* pad the second row so +chips align under -chips */}
+                    <span aria-hidden className="pointer-events-none" />
                   </div>
                 )}
               </div>
