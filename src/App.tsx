@@ -8,12 +8,18 @@ import ScoreBoard from './components/ScoreBoard';
 import WinnerBanner from './components/WinnerBanner';
 import Footer from './components/Footer';
 import WatchMode from './components/WatchMode';
+import AdBanner from './components/AdBanner';
+import GameSummary from './components/GameSummary';
+import Privacy from './components/Privacy';
 import { useGame, GameProvider } from './hooks/useGame';
 
 function AppContent() {
   const {
     players,
     totalRounds,
+    finished,
+    setFinished,
+    startNewGame,
   } = useGame();
 
   const [activeTab, setActiveTab] = useState<'players' | 'score' | 'board'>(
@@ -24,6 +30,7 @@ function AppContent() {
     <div className="min-h-screen bg-gray-100 md:py-10">
       <div className="w-full max-w-md md:max-w-2xl mx-auto bg-white shadow-lg min-h-screen md:min-h-0 md:rounded-2xl flex flex-col overflow-hidden print:overflow-visible">
         <Header />
+        <AdBanner />
 
         <TabNavigation
           activeTab={activeTab}
@@ -53,6 +60,13 @@ function AppContent() {
         <WinnerBanner />
         <Footer />
       </div>
+
+      {finished && (
+        <GameSummary
+          onClose={() => setFinished(false)}
+          onNewGame={() => startNewGame()}
+        />
+      )}
     </div>
   );
 }
@@ -61,6 +75,10 @@ function App() {
   const watchMatch = window.location.pathname.match(/^\/watch\/([a-f0-9]+)$/);
   if (watchMatch) {
     return <WatchMode roomId={watchMatch[1]} />;
+  }
+
+  if (window.location.pathname === '/privacy') {
+    return <Privacy />;
   }
 
   return (

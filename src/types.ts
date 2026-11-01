@@ -18,5 +18,6 @@ export interface Game {
   players: Player[];
   rounds: Round[];
   currentRound: number;
+  finished?: boolean;
   createdAt: Date;
 }

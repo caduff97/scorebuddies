@@ -37,6 +37,10 @@ interface GameContextType {
   ) => void;
   deleteRound: (roundNumber: number) => void;
   resetGame: () => void;
+  finishGame: () => void;
+  startNewGame: () => void;
+  finished: boolean;
+  setFinished: (value: boolean) => void;
   getWinners: () => Player[] | null;
   getRoundByNumber: (roundNumber: number) => Round | undefined;
   setEditingRound: (round: number | null) => void;
@@ -72,6 +76,9 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   const [editingRound, setEditingRound] = useState<number | null>(null);
   const [viewingRound, setViewingRound] = useState<number>(
     () => loadSavedGame()?.currentRound ?? 1
+  );
+  const [finished, setFinished] = useState<boolean>(
+    () => loadSavedGame()?.finished ?? false
   );
 
   const totalRounds = useMemo(() => rounds.length, [rounds]);
@@ -117,10 +124,11 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
       players,
       rounds,
       currentRound,
+      finished,
       createdAt: new Date(),
     };
     localStorage.setItem("scorebuddies-game", JSON.stringify(game));
-  }, [gameName, players, rounds, currentRound]);
+  }, [gameName, players, rounds, currentRound, finished]);
 
   // ---- Core Actions ----
   const addPlayer = (player: Player) => {
@@ -169,9 +177,14 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     setCurrentRound(1);
     setEditingRound(null);
     setGameName("");
+    setFinished(false);
     localStorage.removeItem("scorebuddies-game");
     localStorage.removeItem("scorebuddies-draft-scores");
   };
+
+  const finishGame = () => setFinished(true);
+
+  const startNewGame = () => resetGame();
 
   const getWinners = () => {
     if (!players.length) return null;
@@ -208,6 +221,10 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     updateRound,
     deleteRound,
     resetGame,
+    finishGame,
+    startNewGame,
+    finished,
+    setFinished,
     getWinners,
     getRoundByNumber,
     setEditingRound,
