@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
-import TabNavigation from './components/TabNavigation';
+import BottomNav from './components/BottomNav';
 import RoundSelector from './components/RoundSelector';
 import PlayerInput from './components/PlayerInput';
 import ScoreInput from './components/ScoreInput';
 import ScoreBoard from './components/ScoreBoard';
 import WinnerBanner from './components/WinnerBanner';
-import Footer from './components/Footer';
 import WatchMode from './components/WatchMode';
 import AdBanner from './components/AdBanner';
 import GameSummary from './components/GameSummary';
@@ -23,42 +22,49 @@ function AppContent() {
   } = useGame();
 
   const [activeTab, setActiveTab] = useState<'players' | 'score' | 'board'>(
-    () => players.length > 0 ? 'score' : 'players'
+    () => (players.length > 0 ? 'score' : 'players')
   );
 
+  // When the game is cleared (New Game), always return to the Players screen.
+  useEffect(() => {
+    if (players.length === 0) setActiveTab('players');
+  }, [players.length]);
+
   return (
-    <div className="min-h-screen bg-gray-100 md:py-10">
-      <div className="w-full max-w-md md:max-w-2xl mx-auto bg-white shadow-lg min-h-screen md:min-h-0 md:rounded-2xl flex flex-col overflow-hidden print:overflow-visible">
+    <div className="bg-gray-100 md:py-8 md:min-h-screen">
+      <div className="w-full max-w-md md:max-w-2xl mx-auto bg-white shadow-lg flex flex-col overflow-hidden h-[100dvh] md:h-[86vh] md:rounded-2xl print:h-auto print:overflow-visible print:shadow-none">
         <Header />
         <AdBanner />
-
-        <TabNavigation
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          hasPlayers={players.length > 0}
-        />
+        <WinnerBanner />
 
         {activeTab === 'score' && players.length > 0 && totalRounds > 0 && (
-          <RoundSelector
-          />
+          <RoundSelector />
         )}
 
         <main className="flex-1 overflow-y-auto print:overflow-visible">
           {activeTab === 'players' && (
-            <PlayerInput />
+            <>
+              <PlayerInput />
+              <p className="text-center text-xs text-gray-400 py-4">
+                <a href="/privacy" className="hover:text-gray-600">
+                  Privacy Policy
+                </a>
+              </p>
+            </>
           )}
 
-          {activeTab === 'score' && players.length > 0 && (
-            <ScoreInput />
-          )}
+          {activeTab === 'score' && players.length > 0 && <ScoreInput />}
 
           {activeTab === 'board' && players.length > 0 && (
             <ScoreBoard onTabChange={setActiveTab} />
           )}
         </main>
 
-        <WinnerBanner />
-        <Footer />
+        <BottomNav
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          hasPlayers={players.length > 0}
+        />
       </div>
 
       {finished && (

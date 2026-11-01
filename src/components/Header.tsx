@@ -1,16 +1,26 @@
 import React, { useState, useRef } from 'react';
-import { Gamepad2, Pencil, Share2 } from 'lucide-react';
+import {
+  Gamepad2,
+  Pencil,
+  Share2,
+  MoreVertical,
+  Flag,
+  RotateCcw,
+  Shield,
+} from 'lucide-react';
 import { useGame } from '../hooks/useGame';
 import { useShare } from '../hooks/useShare';
 import ShareModal from './ShareModal';
 
 const Header = () => {
-  const { gameName, setGameName, players } = useGame();
+  const { gameName, setGameName, players, finishGame, startNewGame } = useGame();
   const { roomId, startSharing, stopSharing, isSharing } = useShare();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const hasPlayers = players.length > 0;
 
   const startEditing = () => {
     setDraft(gameName);
@@ -33,21 +43,33 @@ const Header = () => {
     setShowModal(true);
   };
 
+  const handleFinish = () => {
+    setMenuOpen(false);
+    if (hasPlayers) finishGame();
+  };
+
+  const handleNewGame = () => {
+    setMenuOpen(false);
+    if (window.confirm('Start a new game? This clears all players and scores.')) {
+      startNewGame();
+    }
+  };
+
   return (
     <>
-      <header className="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-6 text-center shadow-lg print:hidden">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex-1" />
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Gamepad2 size={28} className="text-yellow-300 sm:size-8" />
-            <h1 className="text-2xl sm:text-3xl font-bold">ScoreBuddies</h1>
+      <header className="shrink-0 bg-gradient-to-r from-primary-600 to-primary-700 text-white px-4 py-2.5 shadow-md print:hidden">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Gamepad2 size={22} className="text-yellow-300" />
+            <h1 className="text-lg font-bold">ScoreBuddies</h1>
           </div>
-          <div className="flex-1 flex justify-end">
-            {players.length > 0 && (
+
+          <div className="flex items-center gap-1">
+            {hasPlayers && (
               <button
                 onClick={handleShare}
-                title="Share scoreboard"
-                className="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 transition-colors rounded-full px-2 sm:px-3 py-1.5 text-sm font-medium"
+                title="Share live scoreboard"
+                className="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 transition-colors rounded-full px-2.5 py-1.5 text-xs font-medium"
               >
                 <Share2 size={14} />
                 {isSharing ? (
@@ -60,40 +82,88 @@ const Header = () => {
                 )}
               </button>
             )}
+
+            <div className="relative">
+              <button
+                onClick={() => setMenuOpen((v) => !v)}
+                aria-label="Menu"
+                className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
+              >
+                <MoreVertical size={18} />
+              </button>
+
+              {menuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setMenuOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-1 w-44 bg-white rounded-lg shadow-xl z-50 py-1 text-sm text-gray-700">
+                    <button
+                      onClick={handleFinish}
+                      disabled={!hasPlayers}
+                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed text-left"
+                    >
+                      <Flag size={15} className="text-primary-600" /> Finish game
+                    </button>
+                    <button
+                      onClick={handleNewGame}
+                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 text-left"
+                    >
+                      <RotateCcw size={15} className="text-gray-500" /> New game
+                    </button>
+                    <a
+                      href="/privacy"
+                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100"
+                    >
+                      <Shield size={15} className="text-gray-500" /> Privacy
+                    </a>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
-        {editing ? (
-          <input
-            ref={inputRef}
-            type="text"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onBlur={commit}
-            onKeyDown={handleKeyDown}
-            placeholder="Game name"
-            className="bg-white/15 text-white placeholder-white/50 text-sm text-center rounded-full px-4 py-1.5 focus:outline-none focus:bg-white/25 w-48"
-          />
-        ) : (
-          <button
-            onClick={startEditing}
-            className="group flex items-center justify-center gap-1.5 mx-auto text-sm"
-          >
-            {gameName ? (
-              <span className="text-white font-medium">{gameName}</span>
-            ) : (
-              <span className="text-white/50">Add a game name...</span>
-            )}
-            <Pencil size={13} className="text-white/40 group-hover:text-white/80 transition-colors" />
-          </button>
-        )}
+        <div className="mt-1 flex justify-center">
+          {editing ? (
+            <input
+              ref={inputRef}
+              type="text"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onBlur={commit}
+              onKeyDown={handleKeyDown}
+              placeholder="Game name"
+              className="bg-white/15 text-white placeholder-white/50 text-xs text-center rounded-full px-3 py-1 focus:outline-none focus:bg-white/25 w-48"
+            />
+          ) : (
+            <button
+              onClick={startEditing}
+              className="group flex items-center gap-1.5 text-xs"
+            >
+              {gameName ? (
+                <span className="text-white/90 font-medium">{gameName}</span>
+              ) : (
+                <span className="text-white/50">Add a game name...</span>
+              )}
+              <Pencil
+                size={11}
+                className="text-white/40 group-hover:text-white/80 transition-colors"
+              />
+            </button>
+          )}
+        </div>
       </header>
 
       {showModal && roomId && (
         <ShareModal
           roomId={roomId}
           onClose={() => setShowModal(false)}
-          onStop={() => { stopSharing(); setShowModal(false); }}
+          onStop={() => {
+            stopSharing();
+            setShowModal(false);
+          }}
         />
       )}
     </>

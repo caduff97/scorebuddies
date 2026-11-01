@@ -1,47 +1,48 @@
 import React from 'react';
 import { Users, Plus, Trophy } from 'lucide-react';
 
-interface TabNavigationProps {
+interface BottomNavProps {
   activeTab: 'players' | 'score' | 'board';
   onTabChange: (tab: 'players' | 'score' | 'board') => void;
   hasPlayers: boolean;
 }
 
-const TabNavigation: React.FC<TabNavigationProps> = ({ 
-  activeTab, 
-  onTabChange, 
-  hasPlayers 
+const BottomNav: React.FC<BottomNavProps> = ({
+  activeTab,
+  onTabChange,
+  hasPlayers,
 }) => {
   const tabs = [
     { id: 'players' as const, label: 'Players', icon: Users },
     { id: 'score' as const, label: 'Score', icon: Plus },
-    { id: 'board' as const, label: 'Board', icon: Trophy }
+    { id: 'board' as const, label: 'Board', icon: Trophy },
   ];
 
   return (
-    <nav className="bg-white border-b border-gray-200">
+    <nav className="shrink-0 bg-white border-t border-gray-200 pb-[env(safe-area-inset-bottom)] print:hidden">
       <div className="flex">
         {tabs.map(({ id, label, icon: Icon }) => {
           const isActive = activeTab === id;
           const isDisabled = (id === 'score' || id === 'board') && !hasPlayers;
-          
+
           return (
             <button
               key={id}
               onClick={() => !isDisabled && onTabChange(id)}
               disabled={isDisabled}
-              className={`
-                flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium
-                transition-all duration-200 border-b-2
-                ${isActive 
-                  ? 'text-primary-600 border-primary-600 bg-primary-50' 
+              aria-label={label}
+              className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 text-xs font-medium transition-colors ${
+                isActive
+                  ? 'text-primary-600'
                   : isDisabled
-                    ? 'text-gray-400 cursor-not-allowed border-transparent'
-                    : 'text-gray-500 border-transparent hover:text-gray-700 hover:bg-gray-50'
-                }
-              `}
+                  ? 'text-gray-300 cursor-not-allowed'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
             >
-              <Icon size={18} />
+              <Icon
+                size={22}
+                className={isActive ? 'scale-110 transition-transform' : ''}
+              />
               {label}
             </button>
           );
@@ -51,4 +52,4 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
   );
 };
 
-export default TabNavigation; 
+export default BottomNav;
