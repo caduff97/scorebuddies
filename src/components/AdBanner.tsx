@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 
-// Configure these via build-time env vars (.env):
+// Configure via build-time env vars (.env):
 //   REACT_APP_ADSENSE_CLIENT=ca-pub-XXXXXXXXXXXXXXXX
 //   REACT_APP_ADSENSE_SLOT=XXXXXXXXXX
-// When the client id is absent, this component renders nothing, so the app
-// stays clean until AdSense is approved and configured.
+// The banner renders only when BOTH are set, so there is no empty ad box
+// before an ad unit exists / the account is approved.
 const ADSENSE_CLIENT = process.env.REACT_APP_ADSENSE_CLIENT || '';
 const AD_SLOT = process.env.REACT_APP_ADSENSE_SLOT || '';
 
@@ -18,9 +18,10 @@ declare global {
 const AdBanner: React.FC = () => {
   const [dismissed, setDismissed] = useState(false);
   const pushed = useRef(false);
+  const active = Boolean(ADSENSE_CLIENT && AD_SLOT) && !dismissed;
 
   useEffect(() => {
-    if (!ADSENSE_CLIENT || dismissed) return;
+    if (!active) return;
 
     const scriptId = 'adsbygoogle-js';
     if (!document.getElementById(scriptId)) {
@@ -37,15 +38,15 @@ const AdBanner: React.FC = () => {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
         pushed.current = true;
       } catch {
-        /* AdSense not ready yet; it retries on next render. */
+        /* AdSense not ready yet; retries on next render. */
       }
     }
-  }, [dismissed]);
+  }, [active]);
 
-  if (!ADSENSE_CLIENT || dismissed) return null;
+  if (!active) return null;
 
   return (
-    <div className="relative bg-gray-100 border-b border-gray-200 print:hidden">
+    <div className="relative shrink-0 bg-gray-100 border-b border-gray-200 print:hidden">
       <ins
         className="adsbygoogle"
         style={{ display: 'block', minHeight: 50 }}

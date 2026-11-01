@@ -9,29 +9,17 @@ interface GameSummaryProps {
 }
 
 const GameSummary: React.FC<GameSummaryProps> = ({ onClose, onNewGame }) => {
-  const { rankedPlayers, getWinners, gameName } = useGame();
+  const { rankedPlayers, getWinners } = useGame();
   const [copied, setCopied] = useState(false);
 
   const winners = getWinners() ?? [];
   const isTie = winners.length > 1;
 
-  const buildText = () => {
-    const title = gameName ? gameName : 'ScoreBuddies game';
-    const standings = rankedPlayers.map(
-      (p, i) => `${i + 1}. ${p.name} — ${p.totalScore}`
-    );
-    const champ = winners.length
-      ? `🏆 ${isTie ? 'Tie' : 'Winner'}: ${winners.map((w) => w.name).join(', ')}`
-      : '';
-    return [`${title} — final score`, champ, ...standings]
-      .filter(Boolean)
-      .join('\n');
-  };
-
+  // Share the app link only (no score breakdown).
   const handleShare = async () => {
     const res = await shareContent({
       title: 'ScoreBuddies',
-      text: buildText(),
+      text: 'Keep score for any game with ScoreBuddies',
       url: window.location.origin,
     });
     if (res === 'copied') {
@@ -94,11 +82,11 @@ const GameSummary: React.FC<GameSummaryProps> = ({ onClose, onNewGame }) => {
         >
           {copied ? (
             <>
-              <CheckCircle size={15} /> Copied!
+              <CheckCircle size={15} /> Link copied!
             </>
           ) : (
             <>
-              <Share2 size={15} /> Share result
+              <Share2 size={15} /> Share ScoreBuddies
             </>
           )}
         </button>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Trophy, Medal, Hash, TrendingUp, Printer } from "lucide-react";
+import { Trophy, Medal, Hash, TrendingUp, Printer, Flag, RotateCcw } from "lucide-react";
 import { useGame } from "../hooks/useGame";
 
 interface ScoreBoardProps {
@@ -7,7 +7,8 @@ interface ScoreBoardProps {
 }
 
 const ScoreBoard: React.FC<ScoreBoardProps> = ({ onTabChange }) => {
-  const { rankedPlayers, rounds, setViewingRound, gameName } = useGame();
+  const { rankedPlayers, rounds, setViewingRound, gameName, finishGame, startNewGame } =
+    useGame();
 
   const getPlayerScoreForRound = (
     playerId: string,
@@ -26,6 +27,12 @@ const ScoreBoard: React.FC<ScoreBoardProps> = ({ onTabChange }) => {
 
   const handlePrint = () => window.print();
 
+  const handleNewGame = () => {
+    if (window.confirm("Start a new game? This clears all players and scores.")) {
+      startNewGame();
+    }
+  };
+
   return (
     <div id="print-scoreboard" className="p-6">
       {/* Print-only header */}
@@ -36,17 +43,36 @@ const ScoreBoard: React.FC<ScoreBoardProps> = ({ onTabChange }) => {
         <p className="text-sm text-gray-500 mt-1">{new Date().toLocaleDateString(undefined, { dateStyle: "long" })}</p>
       </div>
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Trophy className="text-primary-600" size={24} />
           <h2 className="text-2xl font-bold text-gray-800">Scoreboard</h2>
         </div>
         <button
           onClick={handlePrint}
-          className="print:hidden flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+          className="print:hidden flex items-center gap-2 px-3 py-2 bg-gray-100 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
+          title="Print or save as PDF"
         >
           <Printer size={16} />
-          Print &amp; Save
+          Print
+        </button>
+      </div>
+
+      {/* Game-level actions */}
+      <div className="flex gap-2 mb-6 print:hidden">
+        <button
+          onClick={finishGame}
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-700 transition-colors"
+        >
+          <Flag size={16} />
+          Finish Game
+        </button>
+        <button
+          onClick={handleNewGame}
+          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          <RotateCcw size={16} />
+          New
         </button>
       </div>
 

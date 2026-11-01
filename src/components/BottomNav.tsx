@@ -5,13 +5,17 @@ interface BottomNavProps {
   activeTab: 'players' | 'score' | 'board';
   onTabChange: (tab: 'players' | 'score' | 'board') => void;
   hasPlayers: boolean;
+  visible?: boolean;
 }
 
 const BottomNav: React.FC<BottomNavProps> = ({
   activeTab,
   onTabChange,
   hasPlayers,
+  visible = true,
 }) => {
+  if (!visible) return null;
+
   const tabs = [
     { id: 'players' as const, label: 'Players', icon: Users },
     { id: 'score' as const, label: 'Score', icon: Plus },

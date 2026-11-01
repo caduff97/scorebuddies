@@ -1,9 +1,13 @@
 import React, { useState } from "react";
-import { UserPlus, User, Pencil, Check, X } from "lucide-react";
+import { UserPlus, User, Pencil, Check, X, ArrowRight } from "lucide-react";
 import { Player } from "../types";
 import { useGame } from "../hooks/useGame";
 
-const PlayerInput = () => {
+interface PlayerInputProps {
+  onContinue?: () => void;
+}
+
+const PlayerInput: React.FC<PlayerInputProps> = ({ onContinue }) => {
   const { players, alphabeticPlayers, addPlayer, renamePlayer } = useGame();
   const [playerName, setPlayerName] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -54,7 +58,7 @@ const PlayerInput = () => {
         <h2 className="text-2xl font-bold text-gray-800">Players</h2>
       </div>
 
-      <form onSubmit={handleAddPlayer} className="mb-8">
+      <form onSubmit={handleAddPlayer} className="mb-6">
         <div className="flex gap-3">
           <input
             type="text"
@@ -153,6 +157,23 @@ const PlayerInput = () => {
           <p className="text-gray-400 italic">Add players to start the game!</p>
         </div>
       )}
+
+      {players.length > 0 && onContinue && (
+        <button
+          onClick={onContinue}
+          className="w-full mt-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-2"
+        >
+          Start scoring
+          <ArrowRight size={18} />
+        </button>
+      )}
+
+      <p className="mt-8 text-center text-[11px] text-gray-400">
+        ScoreBuddies ·{" "}
+        <a href="/privacy" className="hover:text-gray-600 underline-offset-2 hover:underline">
+          Privacy
+        </a>
+      </p>
     </div>
   );
 };
